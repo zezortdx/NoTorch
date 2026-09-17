@@ -1,0 +1,46 @@
+# venvs
+.venv/
+venv/
+env/
+ENV/
+
+# bytecode / caches
+__pycache__/
+*.py[cod]
+*.pyo
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# build / dist
+build/
+dist/
+*.egg-info/
+*.egg
+
+# coverage
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# data / mnist
+data/mnist/
+*.npz
+*.pkl
+*.pt
+
+# models / figures
+*.npz
+checkpoints/
+figures/
+*.png
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
