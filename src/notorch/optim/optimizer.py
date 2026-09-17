@@ -63,12 +63,14 @@ class Optimizer(ABC):
             ValueError: If the group is malformed or a parameter is duplicated.
         """
         if not isinstance(param_group, dict):
-            raise ValueError("param_group must be a dict.")
+            raise ValueError("param_group must be a dict.")  # noqa: TRY004
         if "params" not in param_group:
             raise ValueError("param_group must contain a 'params' key.")
         raw = param_group["params"]
         if isinstance(raw, dict):
-            raise ValueError("'params' must be a parameter or iterable, not a dict.")
+            raise ValueError(  # noqa: TRY004
+                "'params' must be a parameter or iterable, not a dict."
+            )
         if hasattr(raw, "data"):
             params = [raw]
         else:

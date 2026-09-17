@@ -83,7 +83,7 @@ class Flatten(Module):
         flat = 1
         for size in shape[dim:]:
             flat *= size
-        new_shape = tuple(kept) + (int(flat),)
+        new_shape = (*kept, int(flat))
         return x.reshape(new_shape)
 
     def extra_repr(self) -> str:

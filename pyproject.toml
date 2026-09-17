@@ -27,7 +27,7 @@ select = ["E", "F", "UP", "I", "RUF", "S", "BLE", "TRY"]
 ignore = ["S101", "TRY003", "BLE001"]
 
 [tool.ruff.lint.per-file-ignores]
-"examples/*" = ["S110", "BLE001", "TRY004"]
+"examples/*" = ["E402", "S110", "S310", "BLE001", "TRY004"]
 "tests/*" = ["S101"]
 
 [tool.pytest.ini_options]

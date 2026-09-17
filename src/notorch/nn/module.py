@@ -19,7 +19,9 @@ def _named_parameters_of(value: Any, prefix: str) -> Iterator[tuple[str, Tensor]
     """Yield ``(name, parameter)`` pairs found under ``value``."""
     if isinstance(value, Module):
         yield from value.named_parameters(prefix=prefix)
-    elif isinstance(value, Parameter) or isinstance(value, Tensor) and bool(getattr(value, "requires_grad", False)):
+    elif isinstance(value, Parameter) or (
+        isinstance(value, Tensor) and bool(getattr(value, "requires_grad", False))
+    ):
         yield (prefix, value)
     elif isinstance(value, (list, tuple)):
         for i, item in enumerate(value):

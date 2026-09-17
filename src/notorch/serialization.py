@@ -11,11 +11,11 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 import numpy as np
 
-PathLike = Union[str, Path]
+PathLike = str | Path
 
 _KEYS_ENTRY = "__keys__"
 

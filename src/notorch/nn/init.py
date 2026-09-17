@@ -16,7 +16,6 @@ convenience); a fresh entropy-seeded generator is used when ``rng`` is
 from __future__ import annotations
 
 import math
-from typing import Optional
 
 import numpy as np
 
@@ -35,7 +34,7 @@ __all__ = [
     "zeros_",
 ]
 
-RngLike = Optional[np.random.Generator | np.random.RandomState | int]
+RngLike = np.random.Generator | np.random.RandomState | int | None
 
 
 def _coerce_rng(rng: RngLike) -> np.random.Generator | np.random.RandomState:

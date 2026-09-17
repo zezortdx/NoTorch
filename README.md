@@ -6,9 +6,15 @@ No PyTorch.
 No TensorFlow.
 Just NumPy and pain.
 
+![tests](https://github.com/zezortdx/NoTorch/actions/workflows/tests.yml/badge.svg)
+![python](https://img.shields.io/badge/python-3.11%2B-blue)
+![license](https://img.shields.io/badge/license-MIT-green)
+
 ## What is this
 
-NoTorch is a tiny deep learning framework written from scratch on top of NumPy. It exists for one reason: so you actually understand what `loss.backward()` does.
+NoTorch is a tiny educational deep learning framework built on top of NumPy. Let's be honest about the division of labor: NumPy does array storage and number crunching. NoTorch implements the deep-learning machinery on top — computation graph, autodiff, gradient propagation, layers, losses, optimizers, training loops.
+
+It exists for one reason: so you actually understand what `loss.backward()` does.
 
 ## Why
 
@@ -17,10 +23,10 @@ Because `import torch` teaches you API. Rebuilding autograd teaches you the thin
 ## Features
 
 - `Tensor` with dynamic autograd (add, mul, matmul, pow, exp, log, sum, reshape, ... )
-- `nn.Module`, `Linear`, `Sequential`, ReLU / Sigmoid / Tanh / Softmax
-- MSE + fused Softmax Cross-Entropy
+- `nn.Module`, `Linear`, `Sequential`, ReLU / Sigmoid / Tanh
+- MSELoss, BinaryCrossEntropyLoss, CrossEntropyLoss (fused softmax)
 - SGD (+ momentum), Adam
-- `DataLoader` with shuffle/batching, MNIST loader
+- `DataLoader` with shuffle/batching (`TensorDataset`, minibatches, `batches_per_epoch`)
 - `gradcheck`, `manual_seed`, save/load (`.npz`)
 - Test suite + docs that show the math, not just the API
 
@@ -30,7 +36,13 @@ Because `import torch` teaches you API. Rebuilding autograd teaches you the thin
 pip install -e ".[dev]"
 ```
 
-Requires Python >= 3.11, `numpy>=1.24`.
+or a plain local install:
+
+```bash
+pip install .
+```
+
+Requires Python >= 3.11, `numpy>=1.24`. Not on PyPI — install from source. (The distribution is named `notorch-zero`; you still `import notorch`. Don't ask.)
 
 ## 60-second example
 
@@ -60,7 +72,7 @@ for epoch in range(200):
 
 ## Autograd in 30 seconds
 
-Each op records its parents. `backward()` topo-sorts the graph and pushes gradients back via the chain rule. Grads accumulate. Broadcasting is undone with `sum_to_shape`. Full writeup: `docs/autograd.md`.
+Forward ops build a graph. `backward()` walks it in reverse, combining local derivatives with the chain rule. Grads accumulate into `.grad` (that's why you `zero_grad()`). Broadcasting is undone with `sum_to_shape`. Full writeup: `docs/autograd.md`.
 
 ```python
 x = Tensor(2.0, requires_grad=True)
@@ -76,10 +88,10 @@ Math reference (Linear, MSE, activations, softmax/CE, SGD/Adam): `docs/math.md`.
 ```mermaid
 flowchart LR
     T[Tensor<br/>autograd engine] --> M[nn.Module<br/>Linear + activations]
-    M --> L[Loss<br/>MSE / CrossEntropy]
+    M --> L[Loss<br/>MSE / BCE / CrossEntropy]
     L --> O[Optim<br/>SGD / Adam]
     O --> T
-    D[Data<br/>DataLoader / MNIST] --> M
+    D[Data<br/>DataLoader] --> M
 ```
 
 Package map and design rules: `docs/architecture.md`.
@@ -88,13 +100,13 @@ Package map and design rules: `docs/architecture.md`.
 
 ```bash
 python examples/xor.py        # MLP learns XOR. the hello-world of nonlinear pain.
-python examples/spiral.py     # 2-layer MLP on two spirals. watch decision boundary bend.
-python examples/mnist.py      # MLP on MNIST. ~97% if you're patient.
+python examples/spiral.py     # 2-layer MLP on three spirals. watch decision boundary bend.
+python examples/mnist.py      # MLP on MNIST. digits, from scratch, no torchvision.
 ```
 
-- **XOR**: 2-8-1 MLP, BCE-style loss. Converges in seconds.
-- **Spiral**: 2-64-64-2 MLP + softmax CE. The reason hidden layers exist.
-- **MNIST**: 784-128-64-10 MLP, Adam, DataLoader batches. Downloads once via stdlib, caches under `data/mnist/`.
+- **XOR**: 2-8-8-1 MLP (Tanh hidden, Sigmoid out), BCELoss, Adam, full-batch. Converges in seconds.
+- **Spiral**: 3-class spiral, 2-64-64-3 MLP (ReLU) + CrossEntropyLoss + Adam. The reason hidden layers exist.
+- **MNIST**: 784-128-64-10 MLP, Adam, DataLoader batches. Downloads once via stdlib, caches under `data/mnist/`. Typical results land in the high 90s on test accuracy depending on seed and config — your mileage may vary.
 
 ## Project structure
 
@@ -107,7 +119,8 @@ docs/             # autograd, math, architecture
 
 ## Limitations
 
-- CPU + NumPy only. No GPU. No speed records will be broken.
+- CPU + NumPy only. No GPU in v0.1.0. No speed records will be broken.
+- Educational by design. It will not dethrone PyTorch, and it isn't trying to.
 - No Conv2D, no RNNs, no BatchNorm, no Dropout. Yet.
 - Second-order grads? Never heard of them.
 - Large models will be slow. That's the tuition fee for understanding.

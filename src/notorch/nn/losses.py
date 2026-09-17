@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Union
-
 import numpy as np
 
 from ..tensor import Tensor
@@ -16,7 +14,7 @@ __all__ = [
     "MSELoss",
 ]
 
-Target = Union[Tensor, np.ndarray, list, tuple]
+Target = Tensor | np.ndarray | list | tuple
 
 _REDUCTIONS = ("mean", "sum", "none")
 

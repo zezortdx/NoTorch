@@ -91,7 +91,7 @@ def parse_idx_images(path: Path) -> np.ndarray:
 
 def parse_idx_labels(path: Path) -> np.ndarray:
     with gzip.open(path, "rb") as f:
-        magic, n = struct.unpack(">II", f.read(8))
+        magic, _n = struct.unpack(">II", f.read(8))
         assert magic == 2049, f"bad magic {magic} in {path}"
         buf = f.read()
     return np.frombuffer(buf, dtype=np.uint8).astype(np.int64)
